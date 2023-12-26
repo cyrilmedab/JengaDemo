@@ -6,6 +6,7 @@ namespace JengaDemo
     using System.Linq;
     using System.Threading.Tasks;
     using UnityEngine;
+    using UnityEngine.Events;
     using UnityEngine.Networking;
 
     public class AppManager : MonoBehaviour
@@ -27,6 +28,11 @@ namespace JengaDemo
         public LinkedList<JengaStack> stacks = new();
         public LinkedListNode<JengaStack> currStack = null;
 
+        [Header("Selected Block Display")]
+        private RaycastHit _raycastHit;
+        private JengaBlock _currentBlock;
+        [SerializeField] UnityEvent<JengaBlock> OnBlockToDisplayChanged;
+
         private void Awake()
         {
             if (Instance != null && Instance != this) Destroy(this);
@@ -38,6 +44,30 @@ namespace JengaDemo
         {
             StartCoroutine(LoadApiData(URI));
         }
+
+        private void Update()
+        {
+            RaycastToBlock();
+        }
+
+        private void RaycastToBlock()
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            bool isHit = Physics.Raycast(ray, out _raycastHit, float.MaxValue);
+
+            if (isHit)
+            {
+                JengaBlock newBlock = _raycastHit.collider.transform.parent.GetComponent<JengaBlock>();
+                _currentBlock = newBlock;
+            }
+            else
+                _currentBlock = null;
+
+            if (_currentBlock) Debug.Log(_currentBlock.data.standardid);
+            OnBlockToDisplayChanged.Invoke(_currentBlock);
+        }
+
+        #region Loading and Storing Data
 
         private IEnumerator LoadApiData(string uri)
         {
@@ -115,6 +145,7 @@ namespace JengaDemo
             currStack = stacks.First;
             hasMadeList = true;
         }
+        #endregion
 
     }
 }
