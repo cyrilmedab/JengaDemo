@@ -54,6 +54,14 @@ namespace JengaDemo
         }
 
         #region Button Controls
+        public void TestStack()
+        {
+            if (currStack == null)
+                return;
+
+            currStack.Value.TestStack();
+        }
+
         public void ResetStack()
         {
             if (currStack == null)

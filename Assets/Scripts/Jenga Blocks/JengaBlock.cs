@@ -36,7 +36,23 @@ namespace JengaDemo
             rigidBody = boxCollider.GetComponentInChildren<Rigidbody>();
         }
 
-        public void EnablePhysics(bool state)
+        public void TestBlock()
+        {
+            if (masteryMaterial == MasteryMaterial.Glass)
+                EnablePhysics(false);
+            else
+                EnablePhysics(true);
+        }
+
+        private void DisableBlock()
+        {
+            boxCollider.enabled = false;
+            rigidBody.isKinematic = true;
+            meshRenderer.enabled = false;
+
+        }
+
+        private void EnablePhysics(bool state)
         {
             boxCollider.enabled = state;
             rigidBody.isKinematic = !state;

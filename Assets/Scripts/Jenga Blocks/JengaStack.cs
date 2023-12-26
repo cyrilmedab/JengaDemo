@@ -54,6 +54,14 @@ namespace JengaDemo
             stackDisplayText.text = id;
         }
 
+        public void TestStack()
+        {
+            foreach (JengaBlock block in listOfBlocks)
+            {
+                block.TestBlock();
+            }
+        }
+
         #region Stack Creation 
 
         public void ResetStack()

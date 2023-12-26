@@ -11,7 +11,7 @@ PrefabInstance:
     - target: {fileID: 5351689740703674859, guid: 9bcb70a39175d9c41b86d29bf717337f,
         type: 3}
       propertyPath: m_Name
-      value: JengaBlock Variant
+      value: JengaBlock_Stone
       objectReference: {fileID: 0}
     - target: {fileID: 6993510115528382594, guid: 9bcb70a39175d9c41b86d29bf717337f,
         type: 3}
@@ -63,6 +63,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9060211062461766172, guid: 9bcb70a39175d9c41b86d29bf717337f,
+        type: 3}
+      propertyPath: meshRenderer
+      value: 
+      objectReference: {fileID: 1494149965268457156}
+    - target: {fileID: 9060211062461766172, guid: 9bcb70a39175d9c41b86d29bf717337f,
+        type: 3}
+      propertyPath: masteryMaterial
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 9086860621035673534, guid: 9bcb70a39175d9c41b86d29bf717337f,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -73,3 +83,9 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9bcb70a39175d9c41b86d29bf717337f, type: 3}
+--- !u!23 &1494149965268457156 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 9086860621035673534, guid: 9bcb70a39175d9c41b86d29bf717337f,
+    type: 3}
+  m_PrefabInstance: {fileID: 7685193671178453370}
+  m_PrefabAsset: {fileID: 0}
