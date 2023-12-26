@@ -46,12 +46,15 @@ namespace JengaDemo
         private void Awake()
         {
             cameraActions = new CameraControlActions();
-            mainCamera = GetComponent<Camera>();
+            mainCamera = GetComponentInChildren<Camera>();
             mainTransform = mainCamera.transform;
         }
 
         private void OnEnable()
         {
+            zoomHeight = mainTransform.localPosition.y;
+            mainTransform.LookAt(cameraTarget);
+
             lastPosition = this.transform.position;
 
             cameraActions.Camera.RotateCamera.performed += RotateCamera;
@@ -66,6 +69,11 @@ namespace JengaDemo
             cameraActions.Camera.Disable();
         }
 
+        private void Update()
+        {
+            UpdateCameraPosition();
+            UpdateVelocity();
+        }
 
         private void UpdateVelocity()
         {
@@ -79,8 +87,13 @@ namespace JengaDemo
             if (!Mouse.current.middleButton.isPressed)
                 return;
 
+            Vector3 direction = lastPosition - mainCamera.ScreenToViewportPoint(Input.mousePosition);
+            mainTransform.position = cameraTarget.position;
+
+            /*
             float val = context.ReadValue<Vector2>().x;
             transform.rotation = Quaternion.Euler(0f, val * maxRotationSpeed + transform.rotation.eulerAngles.y, 0f);
+            */
         }
 
         private void ZoomCamera(InputAction.CallbackContext context)
