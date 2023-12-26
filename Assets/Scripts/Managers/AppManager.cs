@@ -49,7 +49,8 @@ namespace JengaDemo
 
         private void Update()
         {
-            RaycastToBlock();
+            if (Input.GetMouseButton(1))
+                RaycastToBlock();
         }
 
         #region UI
