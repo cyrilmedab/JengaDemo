@@ -5,6 +5,7 @@ namespace JengaDemo
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using TMPro;
     using UnityEngine;
     using UnityEngine.Events;
     using UnityEngine.Networking;
@@ -31,7 +32,8 @@ namespace JengaDemo
         [Header("Selected Block Display")]
         private RaycastHit _raycastHit;
         private JengaBlock _currentBlock;
-        [SerializeField] UnityEvent<JengaBlock> OnBlockToDisplayChanged;
+        [SerializeField]
+        private TextMeshProUGUI blockDisplay;
 
         private void Awake()
         {
@@ -50,6 +52,8 @@ namespace JengaDemo
             RaycastToBlock();
         }
 
+        #region UI
+
         private void RaycastToBlock()
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -59,13 +63,24 @@ namespace JengaDemo
             {
                 JengaBlock newBlock = _raycastHit.collider.transform.parent.GetComponent<JengaBlock>();
                 _currentBlock = newBlock;
+                UpdateBlockDisplay(newBlock);
             }
             else
                 _currentBlock = null;
 
-            if (_currentBlock) Debug.Log(_currentBlock.data.standardid);
-            OnBlockToDisplayChanged.Invoke(_currentBlock);
+            //if (_currentBlock) Debug.Log(_currentBlock.data.standardid);
+
         }
+
+        private void UpdateBlockDisplay(JengaBlock block)
+        {
+            if (block == null)
+                blockDisplay.text = string.Empty;
+            else
+                blockDisplay.text = string.Format("{0}: {1}\n - {2}\n {3}\n {4}",
+                    block.data.grade, block.data.domain, block.data.cluster, block.data.standardid, block.data.standarddescription);
+        }
+        #endregion
 
         #region Loading and Storing Data
 
