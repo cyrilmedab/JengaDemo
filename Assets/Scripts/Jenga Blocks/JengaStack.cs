@@ -2,13 +2,18 @@ namespace JengaDemo
 {
     using System.Collections;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Linq;
+    using TMPro;
     using UnityEngine;
 
     public class JengaStack : MonoBehaviour
     {
         [SerializeField]
         private string id;
+
+        [SerializeField]
+        private TextMeshPro stackDisplayText;
 
         [SerializeField]
         private List<JengaBlock> listOfBlocks = new();
@@ -35,8 +40,18 @@ namespace JengaDemo
         private IEnumerator WaitForLoad()
         {
             yield return new WaitForSeconds(3f);
+
+            DisplayName();
+
             StartCoroutine(PopulateStack());
             AppManager.Instance.stackForGrade.Add(id, this);
+
+
+        }
+
+        private void DisplayName()
+        {
+            stackDisplayText.text = id;
         }
 
         #region Stack Creation 
