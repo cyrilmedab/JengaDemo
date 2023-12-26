@@ -167,28 +167,11 @@ namespace JengaDemo
 
         const float TRANSLATE_INTERPOLATE_SPEED = 10.0f;
         const float LOOK_INTERPOLATE_SPEED = 2.0f;
-        const float DESIRED_DIST = 10.0f;
-
-        
+        const float DESIRED_DIST = 10.0f;        
 
         private void Awake()
         {
             targetPosition = transform.position;
-        }
-
-        public void UpdateTarget(bool isNext)
-        {
-            if (!AppManager.Instance.hasMadeList)
-                AppManager.Instance.StoreLinkedList();
-
-            //targetLookPoint = newTarget.transform.position + ((Vector3.up * 10f) / 2.0f);
-            //distance = Vector3.Distance(newTarget.Position, transform.position);
-            if (isNext)
-                AppManager.Instance.currStack = (AppManager.Instance.currStack.Next != null) ? AppManager.Instance.currStack.Next : AppManager.Instance.stacks.First;
-            else
-                AppManager.Instance.currStack = (AppManager.Instance.currStack.Previous != null) ? AppManager.Instance.currStack.Previous : AppManager.Instance.stacks.Last;
-
-            target = AppManager.Instance.currStack.Value;
         }
 
         void Update()
@@ -203,11 +186,11 @@ namespace JengaDemo
                 yRot += Mathf.DeltaAngle(yRot, yRot + Input.GetAxis("Mouse X") * sensitivity * Time.unscaledDeltaTime);
             }
 
-            if (Input.GetMouseButtonDown(1))
+            if (Input.GetAxis("Mouse ScrollWheel") > 0)
             {
                 UpdateTarget(true);
             }
-            else if (Input.GetMouseButtonDown(0))
+            else if (Input.GetAxis("Mouse ScrollWheel") < 0)
             {
                 UpdateTarget(false);
             }
@@ -237,6 +220,21 @@ namespace JengaDemo
 
             transform.position = targetPosition;
             transform.LookAt(targetLookPoint, Vector3.up);
+        }
+
+        public void UpdateTarget(bool isNext)
+        {
+            if (!AppManager.Instance.hasMadeList)
+                AppManager.Instance.StoreLinkedList();
+
+            //targetLookPoint = newTarget.transform.position + ((Vector3.up * 10f) / 2.0f);
+            //distance = Vector3.Distance(newTarget.Position, transform.position);
+            if (isNext)
+                AppManager.Instance.currStack = (AppManager.Instance.currStack.Next != null) ? AppManager.Instance.currStack.Next : AppManager.Instance.stacks.First;
+            else
+                AppManager.Instance.currStack = (AppManager.Instance.currStack.Previous != null) ? AppManager.Instance.currStack.Previous : AppManager.Instance.stacks.Last;
+
+            target = AppManager.Instance.currStack.Value;
         }
     }
 }
