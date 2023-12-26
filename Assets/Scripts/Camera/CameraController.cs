@@ -184,9 +184,9 @@ namespace JengaDemo
             //targetLookPoint = newTarget.transform.position + ((Vector3.up * 10f) / 2.0f);
             //distance = Vector3.Distance(newTarget.Position, transform.position);
             if (isNext)
-                AppManager.Instance.currStack = AppManager.Instance.currStack.Next;
+                AppManager.Instance.currStack = (AppManager.Instance.currStack.Next != null) ? AppManager.Instance.currStack.Next : AppManager.Instance.stacks.First;
             else
-                AppManager.Instance.currStack = AppManager.Instance.currStack.Previous;
+                AppManager.Instance.currStack = (AppManager.Instance.currStack.Previous != null) ? AppManager.Instance.currStack.Previous : AppManager.Instance.stacks.Last;
 
             target = AppManager.Instance.currStack.Value;
         }
@@ -197,7 +197,7 @@ namespace JengaDemo
                 return;
 
             // only use mouse axis while left-click is held
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButton(2))
             {
                 xRot += Mathf.DeltaAngle(xRot, xRot - Input.GetAxis("Mouse Y") * sensitivity * Time.unscaledDeltaTime);
                 yRot += Mathf.DeltaAngle(yRot, yRot + Input.GetAxis("Mouse X") * sensitivity * Time.unscaledDeltaTime);
@@ -206,6 +206,10 @@ namespace JengaDemo
             if (Input.GetMouseButtonDown(1))
             {
                 UpdateTarget(true);
+            }
+            else if (Input.GetMouseButtonDown(0))
+            {
+                UpdateTarget(false);
             }
 
             // interpolate camera position
