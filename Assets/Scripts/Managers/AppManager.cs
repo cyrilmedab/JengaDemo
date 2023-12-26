@@ -53,6 +53,16 @@ namespace JengaDemo
                 RaycastToBlock();
         }
 
+        #region Button Controls
+        public void ResetStack()
+        {
+            if (currStack == null)
+                return;
+
+            currStack.Value.ResetStack();
+        }
+        #endregion
+
         #region UI
 
         private void RaycastToBlock()

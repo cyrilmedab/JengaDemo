@@ -43,7 +43,7 @@ namespace JengaDemo
 
             DisplayName();
 
-            StartCoroutine(PopulateStack());
+            PopulateStack();
             AppManager.Instance.stackForGrade.Add(id, this);
 
 
@@ -56,7 +56,28 @@ namespace JengaDemo
 
         #region Stack Creation 
 
-        private IEnumerator PopulateStack()
+        public void ResetStack()
+        {
+            ClearStack();
+            PopulateStack();
+            Debug.Log("Successfully Resetted");
+        }
+
+        private void ClearStack()
+        {
+            foreach (JengaBlock block in listOfBlocks)
+            {
+                Destroy(block.gameObject);
+            }
+            listOfBlocks.Clear();
+        }
+
+        private void PopulateStack()
+        {
+            StartCoroutine(PopulateStackCoroutine());
+        }
+
+        private IEnumerator PopulateStackCoroutine()
         {
             listOfBlockData = AppManager.Instance.blocksInGrade[id];
 
