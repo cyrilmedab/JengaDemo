@@ -1,16 +1,21 @@
 namespace JengaDemo
 {
     using System;
+    using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.InputSystem;
+    using static UnityEngine.GraphicsBuffer;
 
     public class CameraController : MonoBehaviour
     {
+        /*
+        #region Custom Code w/ Zoom
+
         private CameraControlActions cameraActions;
         private InputAction movement;
 
         private Camera mainCamera;
-        private Transform mainTransform;
+        private Transform cameraTransform;
 
         [SerializeField] Transform cameraTarget;
 
@@ -27,8 +32,9 @@ namespace JengaDemo
         private float zoomSpeed = 2f;
 
         // Rotation
-        [SerializeField]
-        private float maxRotationSpeed = 1f;
+        [SerializeField] 
+        float sensitivity = 1000f;
+
 
         // Value set in various functions
         // Used to update the position of the camera base object
@@ -40,20 +46,29 @@ namespace JengaDemo
         private Vector3 horizontalVelocity;
         private Vector3 lastPosition;
 
-        // Tracks where the dragging action started
-        Vector3 startDrag;
+        [SerializeField] Vector3 targetOffset = Vector3.up;
+        [SerializeField] Vector2 orbitSensitivity = Vector2.one;
+
+        float xRot = 0f;
+        float yRot = 0f;
+
+        Vector3 targetLookPoint;
+
+        const float TRANSLATE_INTERPOLATE_SPEED = 10.0f;
+        const float LOOK_INTERPOLATE_SPEED = 2.0f;
+        const float DESIRED_DIST = 10.0f;
 
         private void Awake()
         {
             cameraActions = new CameraControlActions();
             mainCamera = GetComponentInChildren<Camera>();
-            mainTransform = mainCamera.transform;
+            cameraTransform = mainCamera.transform;
         }
 
         private void OnEnable()
         {
-            zoomHeight = mainTransform.localPosition.y;
-            mainTransform.LookAt(cameraTarget);
+            zoomHeight = cameraTransform.localPosition.y;
+            cameraTransform.LookAt(cameraTarget);
 
             lastPosition = this.transform.position;
 
@@ -87,13 +102,28 @@ namespace JengaDemo
             if (!Mouse.current.middleButton.isPressed)
                 return;
 
-            Vector3 direction = lastPosition - mainCamera.ScreenToViewportPoint(Input.mousePosition);
-            mainTransform.position = cameraTarget.position;
+            xRot += Mathf.DeltaAngle(xRot, xRot - Input.GetAxis("Mouse Y") * sensitivity * Time.unscaledDeltaTime);
+            yRot += Mathf.DeltaAngle(yRot, yRot + Input.GetAxis("Mouse X") * sensitivity * Time.unscaledDeltaTime);
 
-            /*
-            float val = context.ReadValue<Vector2>().x;
-            transform.rotation = Quaternion.Euler(0f, val * maxRotationSpeed + transform.rotation.eulerAngles.y, 0f);
-            */
+            // interpolate camera position
+            targetPosition = Vector3.Lerp(targetPosition,
+                cameraTarget.transform.TransformPoint(targetOffset) + Quaternion.Euler(xRot, yRot, 0f) * (DESIRED_DIST * Vector3.back),
+                TRANSLATE_INTERPOLATE_SPEED * Time.unscaledDeltaTime);
+            // interpolate look target point
+            targetLookPoint = Vector3.Lerp(targetLookPoint, cameraTarget.transform.TransformPoint(targetOffset),
+                LOOK_INTERPOLATE_SPEED * Time.unscaledDeltaTime);
+
+            //Vector3 direction = lastPosition - mainCamera.ScreenToViewportPoint(Input.mousePosition);
+            //this.transform.position = cameraTarget.position;
+
+            //this.transform.Rotate(new Vector3(1, 0, 0), direction.y * 180);
+            //this.transform.Rotate(new Vector3(0, 1, 0), -direction.x * 180, Space.World);
+            //this.transform.Translate(new Vector3(0, 0, -10));
+
+            //
+            //float val = context.ReadValue<Vector2>().x;
+            //transform.rotation = Quaternion.Euler(0f, val * maxRotationSpeed + transform.rotation.eulerAngles.y, 0f);
+            //
         }
 
         private void ZoomCamera(InputAction.CallbackContext context)
@@ -102,7 +132,7 @@ namespace JengaDemo
 
             if (Mathf.Abs(val) > 0.1f)
             {
-                zoomHeight = mainTransform.localPosition.y + val * stepSize;
+                zoomHeight = cameraTransform.localPosition.y + val * stepSize;
                 if (zoomHeight < minHeight)
                     zoomHeight = minHeight;
                 else if (zoomHeight > maxHeight)
@@ -112,17 +142,21 @@ namespace JengaDemo
 
         private void UpdateCameraPosition()
         {
-            Vector3 zoomTarget = new Vector3(mainTransform.localPosition.x, zoomHeight, mainTransform.localPosition.z);
-            zoomTarget -= zoomSpeed * (zoomHeight - mainTransform.localPosition.y) * Vector3.forward;
+            Vector3 zoomTarget = new Vector3(cameraTransform.localPosition.x, zoomHeight, cameraTransform.localPosition.z);
+            zoomTarget -= zoomSpeed * (zoomHeight - cameraTransform.localPosition.y) * Vector3.forward;
 
-            mainTransform.localPosition = Vector3.Lerp(mainTransform.localPosition, zoomTarget, Time.deltaTime * zoomDampening);
-            mainTransform.LookAt(cameraTarget);
+            cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, zoomTarget, Time.deltaTime * zoomDampening);
+            cameraTransform.LookAt(this.transform);
         }
-        /*
+        #endregion
+
+        */
+
         [SerializeField] Vector3 targetOffset = Vector3.up;
         [SerializeField] Vector2 orbitSensitivity = Vector2.one;
 
-        JengaStack target;
+        
+        [SerializeField] JengaStack target;
 
         float xRot = 0f;
         float yRot = 0f;
@@ -135,21 +169,26 @@ namespace JengaDemo
         const float LOOK_INTERPOLATE_SPEED = 2.0f;
         const float DESIRED_DIST = 10.0f;
 
-        void Awake()
+        
+
+        private void Awake()
         {
             targetPosition = transform.position;
         }
 
-        void OnDestroy()
+        public void UpdateTarget(bool isNext)
         {
+            if (!AppManager.Instance.hasMadeList)
+                AppManager.Instance.StoreLinkedList();
 
-        }
-
-        public void UpdateTarget(JengaStack newTarget)
-        {
-            targetLookPoint = newTarget.Position;
+            //targetLookPoint = newTarget.transform.position + ((Vector3.up * 10f) / 2.0f);
             //distance = Vector3.Distance(newTarget.Position, transform.position);
-            target = newTarget;
+            if (isNext)
+                AppManager.Instance.currStack = AppManager.Instance.currStack.Next;
+            else
+                AppManager.Instance.currStack = AppManager.Instance.currStack.Previous;
+
+            target = AppManager.Instance.currStack.Value;
         }
 
         void Update()
@@ -162,6 +201,11 @@ namespace JengaDemo
             {
                 xRot += Mathf.DeltaAngle(xRot, xRot - Input.GetAxis("Mouse Y") * sensitivity * Time.unscaledDeltaTime);
                 yRot += Mathf.DeltaAngle(yRot, yRot + Input.GetAxis("Mouse X") * sensitivity * Time.unscaledDeltaTime);
+            }
+
+            if (Input.GetMouseButtonDown(1))
+            {
+                UpdateTarget(true);
             }
 
             // interpolate camera position
@@ -190,6 +234,5 @@ namespace JengaDemo
             transform.position = targetPosition;
             transform.LookAt(targetLookPoint, Vector3.up);
         }
-        */
     }
 }

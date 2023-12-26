@@ -23,6 +23,9 @@ namespace JengaDemo
         public Dictionary<string, List<BlockData>> blocksInGrade = new();
         public Dictionary<string, JengaStack> stackForGrade = new();
 
+        public bool hasMadeList = false;
+        public LinkedList<JengaStack> stacks = new();
+        public LinkedListNode<JengaStack> currStack = null;
 
         private void Awake()
         {
@@ -87,7 +90,7 @@ namespace JengaDemo
                     blocksInGrade.Add(data.grade, new List<BlockData> { data });
                 }
             }
-            
+
             /*
             foreach (KeyValuePair<string, List<BlockData>> kvp in AppManager.Instance.blocksInGrade)
             {
@@ -100,6 +103,17 @@ namespace JengaDemo
                 
             //Debug.Log("Key = {0} + Value = {1}" + kvp.Key + kvp.Value);
             */
+        }
+
+        public void StoreLinkedList()
+        {
+            stacks.AddLast(stackForGrade["6th Grade"]);
+            stacks.AddLast(stackForGrade["7th Grade"]);
+            stacks.AddLast(stackForGrade["8th Grade"]);
+            stacks.AddLast(stackForGrade["Algebra I"]);
+
+            currStack = stacks.First;
+            hasMadeList = true;
         }
 
     }
